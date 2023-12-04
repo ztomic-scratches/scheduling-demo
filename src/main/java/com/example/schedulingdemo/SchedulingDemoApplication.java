@@ -1,6 +1,5 @@
 package com.example.schedulingdemo;
 
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
@@ -8,12 +7,15 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.task.ThreadPoolTaskSchedulerCustomizer;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 
 @SpringBootApplication
@@ -23,6 +25,13 @@ public class SchedulingDemoApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SchedulingDemoApplication.class, args);
+	}
+
+	@Bean
+	public ThreadPoolTaskSchedulerCustomizer threadPoolTaskSchedulerCustomizer() {
+		return taskScheduler -> {
+			taskScheduler.setErrorHandler(t -> LoggerFactory.getLogger(ThreadPoolTaskScheduler.class).error("Unexpected error occurred in {}scheduled task.", Thread.currentThread().isVirtual() ? "virtual " : "", t));
+		};
 	}
 	
 	@Component
