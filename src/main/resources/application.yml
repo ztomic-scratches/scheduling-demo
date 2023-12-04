@@ -1,0 +1,10 @@
+spring:
+  task:
+    scheduling:
+      pool:
+        size: 10
+  threads:
+    virtual:
+      enabled: false
+  main:
+    keep-alive: ${spring.threads.virtual.enabled}
